@@ -7,10 +7,43 @@ import { msgTypes } from './registry';
 import { IgniteClient } from "../client"
 import { MissingWalletError } from "../helpers"
 import { Api } from "./rest";
+import { MsgCreatePool } from "./types/example/dex/tx";
+import { MsgUpdatePool } from "./types/example/dex/tx";
+import { MsgDeletePool } from "./types/example/dex/tx";
 
 
-export {  };
+export { MsgCreatePool, MsgUpdatePool, MsgDeletePool };
 
+type sendMsgCreatePoolParams = {
+  value: MsgCreatePool,
+  fee?: StdFee,
+  memo?: string
+};
+
+type sendMsgUpdatePoolParams = {
+  value: MsgUpdatePool,
+  fee?: StdFee,
+  memo?: string
+};
+
+type sendMsgDeletePoolParams = {
+  value: MsgDeletePool,
+  fee?: StdFee,
+  memo?: string
+};
+
+
+type msgCreatePoolParams = {
+  value: MsgCreatePool,
+};
+
+type msgUpdatePoolParams = {
+  value: MsgUpdatePool,
+};
+
+type msgDeletePoolParams = {
+  value: MsgDeletePool,
+};
 
 
 export const registry = new Registry(msgTypes);
@@ -30,6 +63,72 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 
   return {
 		
+		async sendMsgCreatePool({ value, fee, memo }: sendMsgCreatePoolParams): Promise<DeliverTxResponse> {
+			if (!signer) {
+					throw new Error('TxClient:sendMsgCreatePool: Unable to sign Tx. Signer is not present.')
+			}
+			try {			
+				const { address } = (await signer.getAccounts())[0]; 
+				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
+				let msg = this.msgCreatePool({ value: MsgCreatePool.fromPartial(value) })
+				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
+			} catch (e: any) {
+				throw new Error('TxClient:sendMsgCreatePool: Could not broadcast Tx: '+ e.message)
+			}
+		},
+		
+		async sendMsgUpdatePool({ value, fee, memo }: sendMsgUpdatePoolParams): Promise<DeliverTxResponse> {
+			if (!signer) {
+					throw new Error('TxClient:sendMsgUpdatePool: Unable to sign Tx. Signer is not present.')
+			}
+			try {			
+				const { address } = (await signer.getAccounts())[0]; 
+				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
+				let msg = this.msgUpdatePool({ value: MsgUpdatePool.fromPartial(value) })
+				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
+			} catch (e: any) {
+				throw new Error('TxClient:sendMsgUpdatePool: Could not broadcast Tx: '+ e.message)
+			}
+		},
+		
+		async sendMsgDeletePool({ value, fee, memo }: sendMsgDeletePoolParams): Promise<DeliverTxResponse> {
+			if (!signer) {
+					throw new Error('TxClient:sendMsgDeletePool: Unable to sign Tx. Signer is not present.')
+			}
+			try {			
+				const { address } = (await signer.getAccounts())[0]; 
+				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
+				let msg = this.msgDeletePool({ value: MsgDeletePool.fromPartial(value) })
+				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
+			} catch (e: any) {
+				throw new Error('TxClient:sendMsgDeletePool: Could not broadcast Tx: '+ e.message)
+			}
+		},
+		
+		
+		msgCreatePool({ value }: msgCreatePoolParams): EncodeObject {
+			try {
+				return { typeUrl: "/example.dex.MsgCreatePool", value: MsgCreatePool.fromPartial( value ) }  
+			} catch (e: any) {
+				throw new Error('TxClient:MsgCreatePool: Could not create message: ' + e.message)
+			}
+		},
+		
+		msgUpdatePool({ value }: msgUpdatePoolParams): EncodeObject {
+			try {
+				return { typeUrl: "/example.dex.MsgUpdatePool", value: MsgUpdatePool.fromPartial( value ) }  
+			} catch (e: any) {
+				throw new Error('TxClient:MsgUpdatePool: Could not create message: ' + e.message)
+			}
+		},
+		
+		msgDeletePool({ value }: msgDeletePoolParams): EncodeObject {
+			try {
+				return { typeUrl: "/example.dex.MsgDeletePool", value: MsgDeletePool.fromPartial( value ) }  
+			} catch (e: any) {
+				throw new Error('TxClient:MsgDeletePool: Could not create message: ' + e.message)
+			}
+		},
 		
 	}
 };
