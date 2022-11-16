@@ -1,9 +1,11 @@
 // THIS FILE IS GENERATED AUTOMATICALLY. DO NOT MODIFY.
 
+import ExampleDex from './example.dex'
 import ExampleExample from './example.example'
 
 
 export default { 
+  ExampleDex: load(ExampleDex, 'example.dex'),
   ExampleExample: load(ExampleExample, 'example.example'),
   
 }
